@@ -26,9 +26,6 @@ const Navbar = () => {
             <div className="w-8 h-8 bg-gradient-to-tr from-amber-600 to-amber-400 rounded flex items-center justify-center font-bold text-black shadow-[0_0_15px_rgba(245,158,11,0.5)] group-hover:scale-110 transition duration-300">
               A
             </div>
-            <span className="text-xl font-bold tracking-[0.2em] text-white group-hover:text-amber-400 transition-colors">
-              AVERRA
-            </span>
           </Link>
 
           {/* --- DESKTOP NAVIGATION --- */}
