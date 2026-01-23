@@ -105,6 +105,11 @@ async def classify_damage_api(file: UploadFile = File(...)):
     image = Image.open(file.file).convert("RGB")
     severity, confidence = classify_damage(image)
 
+    if severity == "invalid_input":
+        return {
+            "error": "Invalid input. Please upload satellite or aerial images of disaster-affected areas only."
+        }
+
     return {
         "damage_severity": severity,
         "confidence": confidence
@@ -118,7 +123,6 @@ async def segment_disaster(file: UploadFile = File(...)):
     image = Image.open(file.file).convert("RGB")
     mask = segment_image(image)
 
-    # Encode mask to PNG
     _, buffer = cv2.imencode(".png", mask)
     return Response(content=buffer.tobytes(), media_type="image/png")
 
