@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L, { type LatLngExpression } from "leaflet";
 import "leaflet/dist/leaflet.css";
-// 1. Import Firestore functions
 import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
 import { db } from "../firebase";
 import AlertsPanel from "../components/AlertsPanel";
@@ -24,24 +23,28 @@ const center: LatLngExpression = [20.5937, 78.9629]; // India Center
 const Map = () => {
   const [disasters, setDisasters] = useState<Disaster[]>([]);
 
-  // 🔥 Real-time Firestore Sync from 'user_reports'
+  // 🔥 Real-time Firestore Sync
   useEffect(() => {
-    // 2. Query the 'user_reports' collection (same as Alerts.tsx)
     const q = query(collection(db, "user_reports"), orderBy("timestamp", "desc"));
 
     const unsub = onSnapshot(q, (snapshot) => {
       const data = snapshot.docs
         .map(doc => {
           const d = doc.data();
-          // Safety check for coordinates
           if (!d.lat || !d.lng) return null;
+
+          // --- 🔧 FIX: COORDINATE JITTER ---
+          // Add a tiny random offset (approx 10-50m) so markers don't stack perfectly
+          const jitter = 0.0005; 
+          const lat = parseFloat(d.lat) + (Math.random() - 0.5) * jitter;
+          const lng = parseFloat(d.lng) + (Math.random() - 0.5) * jitter;
 
           return {
             id: doc.id,
             type: d.type || "Unknown",
-            severity: d.verified ? "High" : "Unverified", // Dynamic severity based on verification
+            severity: d.verified ? "High" : "Unverified",
             description: d.description || "No description provided.",
-            location: [parseFloat(d.lat), parseFloat(d.lng)],
+            location: [lat, lng], // Use jittered coordinates
             source: d.source || "User Report",
             reporter: d.reporterName || "Anonymous",
             image: d.imageUrl || null
@@ -49,6 +52,7 @@ const Map = () => {
         })
         .filter(Boolean) as Disaster[];
 
+      console.log("🔥 Map Reports Loaded:", data.length); // Check console to verify count
       setDisasters(data);
     });
 
@@ -65,6 +69,7 @@ const Map = () => {
     else if (t.includes("flood")) emoji = "💧";
     else if (t.includes("storm") || t.includes("cyclone")) emoji = "🌪";
     else if (t.includes("quake")) emoji = "📉";
+    else if (t.includes("accident")) emoji = "🚑";
 
     // Dynamic Colors
     let colorClass = "border-emerald-500 shadow-emerald-500/50";
@@ -81,9 +86,9 @@ const Map = () => {
     return L.divIcon({
       className: "custom-marker",
       html: `
-        <div class="relative w-10 h-10 flex items-center justify-center">
+        <div class="relative w-10 h-10 flex items-center justify-center group">
           <div class="absolute w-full h-full rounded-full animate-ping opacity-75 ${pulseClass}"></div>
-          <div class="relative z-10 w-10 h-10 bg-black/80 rounded-full border-2 ${colorClass} flex items-center justify-center text-xl backdrop-blur-sm">
+          <div class="relative z-10 w-10 h-10 bg-black/80 rounded-full border-2 ${colorClass} flex items-center justify-center text-xl backdrop-blur-sm transition-transform group-hover:scale-110">
             ${emoji}
           </div>
         </div>
