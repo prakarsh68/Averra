@@ -53,16 +53,13 @@ data/
 *.tar
 *.tar.gz
 EuroSAT/
-EuroSAT
-flood_only
 flood_only/
-Comprehensive_Disaster_Detection(CDD)/
 Comprehensive_Disaster_Detection/
+
 # -----------------------------
 # TEMP / RUNTIME
 # -----------------------------
 temp/
-.cache/
 *.tmp
 *.bak
 

@@ -1,13 +1,16 @@
 import torch
 from torchvision import models, transforms
 from PIL import Image
+import os
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# Load trained model
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.path.join(BASE_DIR, "models", "disaster_classifier.pth")
+
 model = models.resnet50(weights=None)
 model.fc = torch.nn.Linear(model.fc.in_features, 6)
-model.load_state_dict(torch.load("models/disaster_classifier.pth", map_location=device))
+model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
 model.eval().to(device)
 
 classes = [

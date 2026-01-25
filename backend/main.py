@@ -8,6 +8,7 @@ import random
 import cv2
 
 from ai_model import predict_disaster
+from visual_intel import predict_area
 from segmentation_model import segment_image
 
 app = FastAPI(title="AVERRA AI Backend")
@@ -23,7 +24,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-os.makedirs("temp", exist_ok=True)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+TEMP_DIR = os.path.join(BASE_DIR, "temp")
+os.makedirs(TEMP_DIR, exist_ok=True)
 
 # --------------------
 # ROOT
@@ -66,11 +69,11 @@ def get_disasters():
     ]
 
 # --------------------
-# AI PREDICT (MAIN)
+# DISASTER DETECTION
 # --------------------
 @app.post("/detect")
 async def detect(file: UploadFile = File(...)):
-    file_path = f"temp/{file.filename}"
+    file_path = os.path.join(TEMP_DIR, file.filename)
 
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
@@ -81,7 +84,22 @@ async def detect(file: UploadFile = File(...)):
     return result
 
 # --------------------
-# VISUAL AI SEGMENTATION
+# VISUAL INTEL (EUROSAT)
+# --------------------
+@app.post("/visual-intel")
+async def visual_intel(file: UploadFile = File(...)):
+    file_path = os.path.join(TEMP_DIR, file.filename)
+
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    result = predict_area(file_path)
+    os.remove(file_path)
+
+    return result
+
+# --------------------
+# DAMAGE SEGMENTATION
 # --------------------
 @app.post("/segment")
 async def segment(file: UploadFile = File(...)):
