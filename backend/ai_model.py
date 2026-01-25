@@ -1,21 +1,54 @@
-import numpy as np
+import torch
+from torchvision import models, transforms
 from PIL import Image
 
-def predict_image(image: Image.Image):
-    img = np.array(image)
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    # Normalize pixel values
-    img = img / 255.0
+# Load trained model
+model = models.resnet50(weights=None)
+model.fc = torch.nn.Linear(model.fc.in_features, 6)
+model.load_state_dict(torch.load("models/disaster_classifier.pth", map_location=device))
+model.eval().to(device)
 
-    # Calculate average color intensities
-    red = img[:, :, 0].mean()
-    green = img[:, :, 1].mean()
-    blue = img[:, :, 2].mean()
+classes = [
+    "Damaged_Infrastructure",
+    "Fire_Disaster",
+    "Human_Damage",
+    "Land_Disaster",
+    "Non_Damage",
+    "Water_Disaster"
+]
 
-    # Simple disaster logic
-    if blue > red and blue > green:
-        return "flood", 0.91
-    elif red > blue and red > green:
-        return "fire", 0.88
-    else:
-        return "earthquake", 0.85
+transform = transforms.Compose([
+    transforms.Resize((224,224)),
+    transforms.ToTensor(),
+    transforms.Normalize([0.485,0.456,0.406],[0.229,0.224,0.225])
+])
+
+def severity_mapper(disaster_type):
+    if disaster_type in ["Fire_Disaster", "Human_Damage"]:
+        return "Critical"
+    elif disaster_type in ["Water_Disaster", "Damaged_Infrastructure"]:
+        return "High"
+    elif disaster_type == "Land_Disaster":
+        return "Medium"
+    return "Low"
+
+def predict_disaster(image_path):
+    image = Image.open(image_path).convert("RGB")
+    image = transform(image).unsqueeze(0).to(device)
+
+    with torch.no_grad():
+        outputs = model(image)
+        probs = torch.softmax(outputs, dim=1)
+        conf, pred = torch.max(probs, 1)
+
+    disaster_type = classes[pred.item()]
+    severity = severity_mapper(disaster_type)
+
+    return {
+        "detected": disaster_type != "Non_Damage",
+        "type": disaster_type,
+        "severity": severity,
+        "confidence": float(conf.item())
+    }

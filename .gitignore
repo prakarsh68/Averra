@@ -1,0 +1,90 @@
+# -----------------------------
+# SECURITY / SECRETS
+# -----------------------------
+serviceAccountKey.json
+secrets/
+*.env
+.env.local
+.env.production
+.env.development
+
+# -----------------------------
+# NODE / FRONTEND
+# -----------------------------
+node_modules/
+dist/
+build/
+.vite/
+.cache/
+.npm/
+.yarn/
+.pnpm-debug.log*
+npm-debug.log*
+
+# -----------------------------
+# PYTHON / BACKEND
+# -----------------------------
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+
+# -----------------------------
+# AI / ML FILES
+# -----------------------------
+models/*.pth
+models/*.pt
+models/*.onnx
+*.h5
+*.ckpt
+
+# -----------------------------
+# DATASETS (NEVER COMMIT)
+# -----------------------------
+dataset/
+datasets/
+data/
+*.zip
+*.tar
+*.tar.gz
+EuroSAT/
+EuroSAT
+flood_only
+flood_only/
+Comprehensive_Disaster_Detection(CDD)/
+Comprehensive_Disaster_Detection/
+# -----------------------------
+# TEMP / RUNTIME
+# -----------------------------
+temp/
+.cache/
+*.tmp
+*.bak
+
+# -----------------------------
+# FIREBASE
+# -----------------------------
+.firebase/
+.firebaserc
+firebase-debug.log
+firebase.json
+
+# -----------------------------
+# OS / EDITOR
+# -----------------------------
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# -----------------------------
+# JUPYTER / EXPERIMENTS
+# -----------------------------
+notebooks/
+*.ipynb
