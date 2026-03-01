@@ -10,6 +10,7 @@ import cv2
 from ai_model import predict_disaster
 from visual_intel import predict_area
 from segmentation_model import segment_image
+from damage_model import predict_damage   # ✅ NEW IMPORT
 
 app = FastAPI(title="AVERRA AI Backend")
 
@@ -84,7 +85,7 @@ async def detect(file: UploadFile = File(...)):
     return result
 
 # --------------------
-# VISUAL INTEL (EUROSAT)
+# VISUAL INTEL
 # --------------------
 @app.post("/visual-intel")
 async def visual_intel(file: UploadFile = File(...)):
@@ -108,6 +109,21 @@ async def segment(file: UploadFile = File(...)):
 
     _, buffer = cv2.imencode(".png", mask)
     return Response(content=buffer.tobytes(), media_type="image/png")
+
+# --------------------
+# DAMAGE CLASSIFICATION  ✅ NEW
+# --------------------
+@app.post("/classify-damage")
+async def classify_damage(file: UploadFile = File(...)):
+    file_path = os.path.join(TEMP_DIR, file.filename)
+
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    result = predict_damage(file_path)
+    os.remove(file_path)
+
+    return result
 
 # --------------------
 # RISK PREDICTION

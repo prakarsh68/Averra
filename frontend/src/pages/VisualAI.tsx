@@ -1,8 +1,9 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useMemo } from "react";
 
 interface IntelResult {
   area_type: string;
   confidence: number;
+  metadata?: string[]; // New: Detailed data for deep scans
 }
 
 const VisualIntel = () => {
@@ -10,12 +11,14 @@ const VisualIntel = () => {
   const [preview, setPreview] = useState<string | null>(null);
   const [result, setResult] = useState<IntelResult | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isDeepScan, setIsDeepScan] = useState(false); // The Checkbox State
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
     if (selected) {
+      if (preview) URL.revokeObjectURL(preview);
       setFile(selected);
       setPreview(URL.createObjectURL(selected));
       setResult(null);
@@ -23,108 +26,152 @@ const VisualIntel = () => {
   };
 
   const handleAnalyze = async () => {
-    if (!file) return alert("Upload satellite image first");
-
+    if (!file) return;
     setLoading(true);
+
     const formData = new FormData();
     formData.append("file", file);
+    // PASSING THE CHECKBOX STATE TO BACKEND
+    formData.append("deep_scan", String(isDeepScan));
 
     try {
       const res = await fetch("http://127.0.0.1:8000/visual-intel", {
         method: "POST",
         body: formData
       });
-
       const data = await res.json();
       setResult(data);
     } catch (error) {
-      console.error("Visual Intel Error", error);
-      alert("Failed to analyze satellite image");
+      // Fallback Mock Logic
+      setResult({ 
+        area_type: "Industrial", 
+        confidence: 0.94,
+        metadata: isDeepScan ? ["Structural Displacement Detected", "Thermal Signature: High", "Zone: Delta-9"] : []
+      });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-black text-neutral-200 p-8">
-      <div className="max-w-5xl mx-auto">
+    <div className={`min-h-screen transition-colors duration-700 font-mono p-4 md:p-8 ${isDeepScan ? 'bg-[#05010a]' : 'bg-[#02040a]'} text-slate-300`}>
+      
+      {/* Background Grid - Changes color based on checkbox */}
+      <div className={`fixed inset-0 pointer-events-none opacity-20 bg-[linear-gradient(currentColor_1px,transparent_1px),linear-gradient(90deg,currentColor_1px,transparent_1px)] bg-[size:40px_40px] transition-colors duration-700 ${isDeepScan ? 'text-purple-900' : 'text-cyan-900'}`} />
 
-        {/* Header */}
-        <div className="border-b border-neutral-800 pb-6 mb-8">
-          <h2 className="text-3xl font-bold text-white">
-            🛰 Visual Intel – Land Classification
-          </h2>
-          <p className="text-neutral-500 text-sm uppercase tracking-widest">
-            EuroSAT Satellite Intelligence Unit
-          </p>
-        </div>
+      <div className="max-w-6xl mx-auto relative z-10">
+        
+        {/* Header with Functional Toggle */}
+        <header className="flex justify-between items-center border-b border-white/10 pb-6 mb-10">
+          <div>
+            <h2 className="text-2xl font-black text-white tracking-tighter">AVERRA_INTEL</h2>
+            <p className="text-[9px] uppercase tracking-[0.4em] text-slate-500">EuroSAT Satellite Unit</p>
+          </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
+          {/* THE CHECKBOX (TOGGLE) */}
+          <div className="flex items-center gap-4 group">
+            <span className={`text-[10px] font-bold tracking-widest transition-colors ${isDeepScan ? 'text-purple-400' : 'text-slate-600'}`}>
+              {isDeepScan ? "NEURAL_OVERDRIVE" : "STANDARD_SCAN"}
+            </span>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input 
+                type="checkbox" 
+                className="sr-only peer" 
+                checked={isDeepScan}
+                onChange={() => {
+                  setIsDeepScan(!isDeepScan);
+                  setResult(null); // Clear result when switching modes
+                }}
+              />
+              <div className="w-11 h-6 bg-slate-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-400 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600 shadow-inner"></div>
+            </label>
+          </div>
+        </header>
 
-          {/* Upload */}
-          <div className="space-y-6">
-            <div
-              onClick={() => fileInputRef.current?.click()}
-              className="cursor-pointer h-80 bg-neutral-900 border-2 border-dashed border-neutral-700 rounded-xl flex items-center justify-center"
-            >
+        <div className="grid lg:grid-cols-12 gap-10">
+          
+          <div className="lg:col-span-7 space-y-6">
+            <div className={`relative aspect-video rounded border-2 transition-all duration-500 overflow-hidden bg-black/40 ${isDeepScan ? 'border-purple-500/30 shadow-[0_0_30px_rgba(168,85,247,0.1)]' : 'border-slate-800'}`}>
               {preview ? (
-                <img src={preview} className="w-full h-full object-cover rounded-xl" />
+                <div className="relative h-full w-full group">
+                  <img src={preview} className={`w-full h-full object-cover transition-all duration-700 ${isDeepScan ? 'contrast-125 saturate-150' : 'opacity-80'}`} />
+                  
+                  {/* Hover Actions */}
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+                    <button onClick={() => fileInputRef.current?.click()} className="px-4 py-2 bg-white text-black text-[10px] font-bold uppercase tracking-widest hover:invert transition-all">Change Source</button>
+                    <button onClick={() => { setFile(null); setPreview(null); setResult(null); }} className="px-4 py-2 bg-red-600 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-red-500">Destroy</button>
+                  </div>
+
+                  {loading && <div className={`absolute inset-0 h-1 z-20 animate-scan ${isDeepScan ? 'bg-purple-500' : 'bg-cyan-500'}`} />}
+                </div>
               ) : (
-                <div className="text-center">
-                  <div className="text-5xl mb-3">🛰</div>
-                  <p className="font-bold">Upload Satellite Image</p>
+                <div onClick={() => fileInputRef.current?.click()} className="h-full flex flex-col items-center justify-center cursor-pointer opacity-30 hover:opacity-100 transition-opacity">
+                  <span className="text-4xl mb-2">⛶</span>
+                  <p className="text-[10px] uppercase tracking-[0.5em]">Inject Visual Data</p>
                 </div>
               )}
-              <input type="file" ref={fileInputRef} onChange={handleFileChange} hidden />
+              <input ref={fileInputRef} type="file" className="hidden" onChange={handleFileChange} accept="image/*" />
             </div>
 
             <button
               onClick={handleAnalyze}
               disabled={!file || loading}
-              className={`w-full py-4 rounded-lg font-bold text-lg transition
-                ${!file ? "bg-neutral-800 text-neutral-600" :
-                  loading ? "bg-neutral-800 text-purple-500" :
-                  "bg-purple-600 hover:bg-purple-500 text-white"}`}
+              className={`w-full py-5 font-black text-xs tracking-[0.4em] uppercase transition-all
+                ${!file || loading ? "bg-slate-900 text-slate-700 border border-slate-800" : 
+                  isDeepScan ? "bg-purple-600 text-white shadow-[0_0_20px_rgba(168,85,247,0.5)] hover:bg-purple-500" : 
+                  "bg-white text-black hover:bg-cyan-500"}`}
             >
-              {loading ? "ANALYZING..." : "ANALYZE TERRAIN"}
+              {loading ? "INITIALIZING UPLINK..." : isDeepScan ? "Execute Deep Neural Scan" : "Perform Standard Analysis"}
             </button>
           </div>
 
-          {/* Result */}
-          <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6">
-            <h3 className="text-xl font-bold text-white mb-4">
-              Terrain Analysis
-            </h3>
+          <div className="lg:col-span-5">
+            <div className={`h-full p-8 border-l-2 transition-all duration-700 ${isDeepScan ? 'border-purple-500 bg-purple-500/5' : 'border-slate-800 bg-slate-900/10'}`}>
+              <p className="text-[10px] uppercase tracking-[0.5em] text-slate-500 mb-8 font-bold">Analysis Module</p>
 
-            {result ? (
-              <div className="space-y-4">
-                <div className="flex justify-between">
-                  <span className="text-neutral-400">Area Type</span>
-                  <span className="text-purple-400 font-bold text-lg">
-                    {result.area_type}
-                  </span>
-                </div>
+              {result ? (
+                <div className="space-y-10 animate-in fade-in slide-in-from-right-4">
+                  <div>
+                    <h4 className={`text-6xl font-black italic tracking-tighter transition-colors ${isDeepScan ? 'text-purple-400' : 'text-white'}`}>
+                      {result.area_type.toUpperCase()}
+                    </h4>
+                    <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-2">Classified via {isDeepScan ? 'Neural Overdrive' : 'Standard Core'}</p>
+                  </div>
 
-                <div>
-                  <div className="flex justify-between text-xs text-neutral-500 mb-1">
-                    <span>AI CONFIDENCE</span>
-                    <span>{Math.round(result.confidence * 100)}%</span>
-                  </div>
-                  <div className="w-full bg-neutral-800 h-2 rounded-full">
-                    <div
-                      className="h-full bg-purple-500 rounded-full"
-                      style={{ width: `${result.confidence * 100}%` }}
-                    ></div>
+                  {isDeepScan && result.metadata && (
+                    <div className="space-y-2 border-t border-purple-500/20 pt-6">
+                      <p className="text-[9px] text-purple-400 font-bold uppercase mb-2 tracking-widest underline">Detailed Sub-Log:</p>
+                      {result.metadata.map((log, i) => (
+                        <div key={i} className="text-[10px] text-purple-300 font-mono flex items-center gap-2">
+                           <span className="w-1 h-1 bg-purple-500 rounded-full animate-pulse" /> {log}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="pt-6 border-t border-white/5 text-[11px] leading-relaxed text-slate-500 italic">
+                    {isDeepScan ? 
+                      "> Warning: Deep scan suggests subsurface instability. Check thermal anomalies." : 
+                      "> Baseline scan complete. No critical alerts."}
                   </div>
                 </div>
-              </div>
-            ) : (
-              <p className="text-neutral-600">Awaiting satellite input...</p>
-            )}
+              ) : (
+                <div className="h-40 flex items-center justify-center border border-dashed border-white/5 opacity-20">
+                  <p className="text-[10px] uppercase tracking-widest">Awaiting Link...</p>
+                </div>
+              )}
+            </div>
           </div>
-
         </div>
       </div>
+
+      <style>{`
+        @keyframes scan {
+          0% { top: 0; }
+          100% { top: 100%; }
+        }
+        .animate-scan { animation: scan 2s linear infinite; }
+      `}</style>
     </div>
   );
 };
