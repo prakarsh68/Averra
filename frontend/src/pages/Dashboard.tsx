@@ -95,7 +95,9 @@ const riskLevel = "HIGH";
     </span>
   </div>
 
-  <DisasterTrendChart />
+  <h1 className="text-red-500 text-5xl">
+  VISHANTAK TEST
+</h1>
 </section>
 
             {/* SECONDARY INTEL TABLE */}
