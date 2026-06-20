@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import LiveClock from "./LiveClock";
 
 const Navbar = () => {
   const location = useLocation();
@@ -29,7 +30,7 @@ const Navbar = () => {
           </Link>
 
           {/* --- DESKTOP NAVIGATION --- */}
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden md:flex items-center gap-4">
             {navItems.map((item) => (
               <Link
                 key={item.path}
@@ -50,7 +51,10 @@ const Navbar = () => {
               </Link>
             ))}
           </div>
-
+          <div className="hidden md:flex items-center gap-2 border border-green-500/30 px-3 py-1 rounded">
+  <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+  <LiveClock />
+</div>
           {/* --- MOBILE MENU BUTTON --- */}
           <div className="md:hidden">
             <button 

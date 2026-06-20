@@ -1,5 +1,5 @@
 const AIBriefing = () => {
-  const riskScore = 82;
+  const riskScore = 80;
 
   return (
     <div className="border border-cyan-500/30 bg-cyan-500/5 rounded-sm p-4">
@@ -24,9 +24,9 @@ const AIBriefing = () => {
         </p>
 
         <p>
-          <span className="font-bold text-white">Primary Threat:</span>{" "}
-          Flooding
-        </p>
+  <span className="font-bold text-white">Primary Threat:</span>{" "}
+  Critical Multi-Hazard Event
+</p>
 
         <p>
           <span className="font-bold text-white">Expected Impact:</span>{" "}

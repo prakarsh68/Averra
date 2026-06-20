@@ -6,6 +6,8 @@ import Map from "./Map"; // Integrating your existing Map component
 import DisasterTrendChart from "../components/DisasterTrendChart";
 import RiskAssessment from "../components/RiskAssessment";
 import AIBriefing from "../components/AIBriefing";
+import ThreatLevel from "../components/ThreatLevel";
+import ActivityTimeline from "../components/ActivityTimeline";
 
 const Dashboard = () => {
   const [reports, setReports] = useState<any[]>([]);
@@ -70,6 +72,11 @@ const riskLevel = "HIGH";
       </nav>
 
       <main className="max-w-[1800px] mx-auto p-4 lg:p-8">
+        {isPanic && (
+  <div className="bg-red-600 text-white text-center py-3 font-black tracking-widest animate-pulse">
+    🚨 CRITICAL EMERGENCY MODE ACTIVE 🚨
+  </div>
+)}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
 
   <div className="p-4 border border-red-500/30 bg-red-500/5 rounded">
@@ -130,7 +137,9 @@ const riskLevel = "HIGH";
 
   <DisasterTrendChart />
   <RiskAssessment />
-  <AIBriefing />
+  
+  <ThreatLevel />
+  <ActivityTimeline />
 </section>
 
             {/* SECONDARY INTEL TABLE */}
