@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import Map from "./Map"; // Integrating your existing Map component
 import DisasterTrendChart from "../components/DisasterTrendChart";
 import RiskAssessment from "../components/RiskAssessment";
+import AIBriefing from "../components/AIBriefing";
 
 const Dashboard = () => {
   const [reports, setReports] = useState<any[]>([]);
@@ -129,6 +130,7 @@ const riskLevel = "HIGH";
 
   <DisasterTrendChart />
   <RiskAssessment />
+  <AIBriefing />
 </section>
 
             {/* SECONDARY INTEL TABLE */}
