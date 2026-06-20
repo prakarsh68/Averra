@@ -3,6 +3,7 @@ import { collection, query, orderBy, onSnapshot, doc, deleteDoc } from "firebase
 import { db } from "../firebase"; 
 import { Link } from "react-router-dom";
 import Map from "./Map"; // Integrating your existing Map component
+import DisasterTrendChart from "../components/DisasterTrendChart";
 
 const Dashboard = () => {
   const [reports, setReports] = useState<any[]>([]);
