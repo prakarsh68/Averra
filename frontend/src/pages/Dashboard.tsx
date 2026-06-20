@@ -8,6 +8,12 @@ import RiskAssessment from "../components/RiskAssessment";
 import AIBriefing from "../components/AIBriefing";
 import ThreatLevel from "../components/ThreatLevel";
 import ActivityTimeline from "../components/ActivityTimeline";
+import SeverityGauge from "../components/SeverityGauge";
+import CommandHeader from "../components/CommandHeader";
+import WeatherIntel from "../components/WeatherIntel";
+import ResourceTracker from "../components/ResourceTracker";
+import AIPrediction from "../components/AIPrediction";
+import RiskInfoPanel from "../components/RiskInfoPanel";
 
 const Dashboard = () => {
   const [reports, setReports] = useState<any[]>([]);
@@ -15,6 +21,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [theme, setTheme] = useState<'standard' | 'hazard'>('standard');
   const [isPanic, setIsPanic] = useState(false);
+  const [selectedRegion, setSelectedRegion] = useState("Tamil Nadu");
   const disasterStats = [
   { name: "Flood", count: 45 },
   { name: "Earthquake", count: 18 },
@@ -137,9 +144,21 @@ const riskLevel = "HIGH";
 
   <DisasterTrendChart />
   <RiskAssessment />
-  
+  <CommandHeader
+  alertsCount={alerts.length}
+  reportsCount={reports.length}
+/>
   <ThreatLevel />
-  <ActivityTimeline />
+  <SeverityGauge />
+  <WeatherIntel />
+  <ResourceTracker />
+  <AIPrediction />
+
+<RiskInfoPanel
+  region={selectedRegion}
+/>
+
+<ActivityTimeline />
 </section>
 
             {/* SECONDARY INTEL TABLE */}
