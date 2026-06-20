@@ -10,6 +10,14 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [theme, setTheme] = useState<'standard' | 'hazard'>('standard');
   const [isPanic, setIsPanic] = useState(false);
+  const disasterStats = [
+  { name: "Flood", count: 45 },
+  { name: "Earthquake", count: 18 },
+  { name: "Cyclone", count: 32 },
+  { name: "Wildfire", count: 12 },
+];
+
+const riskLevel = "HIGH";
 
   useEffect(() => {
     const q1 = query(collection(db, "reports"), orderBy("timestamp", "desc"));
