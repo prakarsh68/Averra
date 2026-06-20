@@ -84,6 +84,19 @@ const riskLevel = "HIGH";
                 {/* YOUR MAP COMPONENT */}
                 <Map />
             </section>
+            <section className={`${colors.panel} border ${colors.border} rounded-sm p-4`}>
+  <div className="flex justify-between items-center mb-4">
+    <h3 className="text-white font-bold tracking-wider">
+      DISASTER ANALYTICS
+    </h3>
+
+    <span className="text-xs opacity-60">
+      LIVE DATA OVERVIEW
+    </span>
+  </div>
+
+  <DisasterTrendChart />
+</section>
 
             {/* SECONDARY INTEL TABLE */}
             <section className={`${colors.panel} border ${colors.border} rounded-sm overflow-hidden`}>
