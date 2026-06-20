@@ -4,6 +4,7 @@ import { db } from "../firebase";
 import { Link } from "react-router-dom";
 import Map from "./Map"; // Integrating your existing Map component
 import DisasterTrendChart from "../components/DisasterTrendChart";
+import RiskAssessment from "../components/RiskAssessment";
 
 const Dashboard = () => {
   const [reports, setReports] = useState<any[]>([]);
@@ -68,6 +69,37 @@ const riskLevel = "HIGH";
       </nav>
 
       <main className="max-w-[1800px] mx-auto p-4 lg:p-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+
+  <div className="p-4 border border-red-500/30 bg-red-500/5 rounded">
+    <p className="text-xs opacity-60">Active Alerts</p>
+    <h2 className="text-3xl font-bold text-red-500">
+      {alerts.length}
+    </h2>
+  </div>
+
+  <div className="p-4 border border-yellow-500/30 bg-yellow-500/5 rounded">
+    <p className="text-xs opacity-60">Reports</p>
+    <h2 className="text-3xl font-bold text-yellow-500">
+      {reports.length}
+    </h2>
+  </div>
+
+  <div className="p-4 border border-green-500/30 bg-green-500/5 rounded">
+    <p className="text-xs opacity-60">Resolved Cases</p>
+    <h2 className="text-3xl font-bold text-green-500">
+      91
+    </h2>
+  </div>
+
+  <div className="p-4 border border-blue-500/30 bg-blue-500/5 rounded">
+    <p className="text-xs opacity-60">Risk Level</p>
+    <h2 className="text-3xl font-bold text-blue-500">
+      HIGH
+    </h2>
+  </div>
+
+</div>
         
         {/* DASHBOARD GRID */}
         <div className="grid lg:grid-cols-12 gap-6">
@@ -95,9 +127,8 @@ const riskLevel = "HIGH";
     </span>
   </div>
 
-  <h1 className="text-red-500 text-5xl">
-  VISHANTAK TEST
-</h1>
+  <DisasterTrendChart />
+  <RiskAssessment />
 </section>
 
             {/* SECONDARY INTEL TABLE */}

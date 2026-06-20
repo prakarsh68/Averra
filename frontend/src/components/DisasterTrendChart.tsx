@@ -19,10 +19,20 @@ export default function DisasterTrendChart() {
     <div className="h-64 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data}>
-          <XAxis dataKey="disaster" />
-          <YAxis />
-          <Tooltip />
-          <Bar dataKey="incidents" />
+          <XAxis dataKey="disaster" stroke="#9ca3af" />
+<YAxis stroke="#9ca3af" />
+          <Tooltip
+  contentStyle={{
+    background: "#111827",
+    border: "1px solid #f59e0b",
+    color: "white",
+  }}
+/>
+          <Bar
+  dataKey="incidents"
+  fill="#f59e0b"
+  radius={[4, 4, 0, 0]}
+/>
         </BarChart>
       </ResponsiveContainer>
     </div>
