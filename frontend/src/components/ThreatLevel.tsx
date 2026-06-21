@@ -1,12 +1,11 @@
-const ThreatLevel = () => {
+type Props = {
+  alertsCount: number;
+  riskLevel: string;
+};
+
+const ThreatLevel = ({ alertsCount, riskLevel }: Props) => {
   const threatScore = Math.floor(Math.random() * 30) + 70;
 
-const status =
-  threatScore > 85
-    ? "CRITICAL"
-    : threatScore > 70
-    ? "HIGH"
-    : "MODERATE";
   return (
     <div className="border border-red-500/30 bg-red-950/10 rounded-sm p-6 mb-6">
       <div className="flex justify-between items-center">
@@ -15,15 +14,17 @@ const status =
         </h3>
 
         <div className="text-red-500 text-3xl font-black animate-pulse">
-  🔴 {status}
+  🔴 {riskLevel}
 </div>
       </div>
 
       <div className="grid grid-cols-3 gap-4 mt-6">
         <div className="text-center">
-          <p className="text-3xl text-white font-bold">12</p>
-          <p className="text-xs opacity-60">Affected Zones</p>
-        </div>
+  <p className="text-3xl text-white font-bold">
+    {alertsCount}
+  </p>
+  <p className="text-xs opacity-60">Active Alerts</p>
+</div>
 
         <div className="text-center">
           <p className="text-3xl text-white font-bold">34</p>
@@ -31,11 +32,11 @@ const status =
         </div>
 
         <div className="text-center">
-          <p className="text-3xl text-white font-bold">
-  {threatScore}%
-</p>
-          <p className="text-xs opacity-60">Active Alerts</p>
-        </div>
+  <p className="text-3xl text-white font-bold">
+    {threatScore}%
+  </p>
+  <p className="text-xs opacity-60">Threat Score</p>
+</div>
       </div>
     </div>
   );

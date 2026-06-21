@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { collection, query, orderBy, onSnapshot, doc, deleteDoc } from "firebase/firestore";
 import { db } from "../firebase"; 
 import { Link } from "react-router-dom";
@@ -22,7 +22,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [theme, setTheme] = useState<'standard' | 'hazard'>('standard');
   const [isPanic, setIsPanic] = useState(false);
-  const [selectedRegion, setSelectedRegion] = useState("Tamil Nadu");
+  const selectedRegion = "Tamil Nadu";
   const disasterStats = [
   { name: "Flood", count: 45 },
   { name: "Earthquake", count: 18 },
@@ -53,6 +53,14 @@ const riskLevel = "HIGH";
     : isHazard 
     ? { bg: "bg-[#0f0f00]", accent: "text-yellow-500", border: "border-yellow-600/40", panel: "bg-yellow-600/5", mapRing: "ring-yellow-500/20" }
     : { bg: "bg-[#050505]", accent: "text-white", border: "border-white/10", panel: "bg-white/[0.02]", mapRing: "ring-white/5" };
+
+    if (loading) {
+  return (
+    <div className="text-white p-10">
+      Loading Dashboard...
+    </div>
+  );
+}
 
   return (
     <div className={`min-h-screen ${colors.bg} text-neutral-400 font-mono transition-all duration-500 relative overflow-hidden`}>
@@ -151,16 +159,19 @@ const riskLevel = "HIGH";
 />
   <ThreatLevel
   alertsCount={alerts.length}
+  riskLevel={riskLevel}
 />
   <SeverityGauge />
   <WeatherIntel />
   <ResourceTracker />
+  <AIBriefing />
   <AIPrediction />
 
 <RiskInfoPanel
   region={selectedRegion}
+  disasterStats={disasterStats}
 />
-<MissionStatus/>
+<MissionStatus />
 <ActivityTimeline />
 </section>
 
