@@ -1,4 +1,12 @@
 const ThreatLevel = () => {
+  const threatScore = Math.floor(Math.random() * 30) + 70;
+
+const status =
+  threatScore > 85
+    ? "CRITICAL"
+    : threatScore > 70
+    ? "HIGH"
+    : "MODERATE";
   return (
     <div className="border border-red-500/30 bg-red-950/10 rounded-sm p-6 mb-6">
       <div className="flex justify-between items-center">
@@ -7,8 +15,8 @@ const ThreatLevel = () => {
         </h3>
 
         <div className="text-red-500 text-3xl font-black animate-pulse">
-          🔴 CRITICAL
-        </div>
+  🔴 {status}
+</div>
       </div>
 
       <div className="grid grid-cols-3 gap-4 mt-6">
@@ -23,7 +31,9 @@ const ThreatLevel = () => {
         </div>
 
         <div className="text-center">
-          <p className="text-3xl text-white font-bold">87</p>
+          <p className="text-3xl text-white font-bold">
+  {threatScore}%
+</p>
           <p className="text-xs opacity-60">Active Alerts</p>
         </div>
       </div>

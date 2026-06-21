@@ -21,22 +21,37 @@ const RiskInfoPanel = ({ region }: Props) => {
           <span className="font-bold text-white">
             Risk Score:
           </span>{" "}
-          84
+          <span className="text-red-500 font-bold">
+  84 / 100
+</span>
         </p>
 
         <p>
-          <span className="font-bold text-white">
-            Flood Risk:
-          </span>{" "}
-          High
-        </p>
+  <span className="font-bold text-white">
+    Flood Risk:
+  </span>{" "}
+  <span className="text-red-500 font-bold">
+    HIGH
+  </span>
+</p>
 
         <p>
-          <span className="font-bold text-white">
-            Cyclone Risk:
-          </span>{" "}
-          Medium
-        </p>
+  <span className="font-bold text-white">
+    Cyclone Risk:
+  </span>{" "}
+  <span className="text-yellow-500 font-bold">
+    MEDIUM
+  </span>
+</p>
+
+<p>
+  <span className="font-bold text-white">
+    Fire Risk:
+  </span>{" "}
+  <span className="text-green-500 font-bold">
+    LOW
+  </span>
+</p>
 
         <p>
           <span className="font-bold text-white">

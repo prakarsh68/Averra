@@ -14,6 +14,7 @@ import WeatherIntel from "../components/WeatherIntel";
 import ResourceTracker from "../components/ResourceTracker";
 import AIPrediction from "../components/AIPrediction";
 import RiskInfoPanel from "../components/RiskInfoPanel";
+import MissionStatus from "../components/MissionStatus";
 
 const Dashboard = () => {
   const [reports, setReports] = useState<any[]>([]);
@@ -148,7 +149,9 @@ const riskLevel = "HIGH";
   alertsCount={alerts.length}
   reportsCount={reports.length}
 />
-  <ThreatLevel />
+  <ThreatLevel
+  alertsCount={alerts.length}
+/>
   <SeverityGauge />
   <WeatherIntel />
   <ResourceTracker />
@@ -157,7 +160,7 @@ const riskLevel = "HIGH";
 <RiskInfoPanel
   region={selectedRegion}
 />
-
+<MissionStatus/>
 <ActivityTimeline />
 </section>
 

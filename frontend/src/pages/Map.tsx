@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L, { type LatLngExpression } from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -124,7 +124,12 @@ const Map = () => {
         <div className="absolute top-4 left-4 z-[400] bg-black/80 backdrop-blur border border-neutral-700 px-4 py-2 rounded text-xs font-mono text-emerald-400 pointer-events-none">
           ● SYSTEM ONLINE <span className="text-neutral-500 ml-2">LIVE FEED: {disasters.length} REPORTS</span>
         </div>
-
+        <div className="absolute top-16 left-4 z-[400] bg-black/80 border border-cyan-500/30 px-4 py-2 rounded text-cyan-400 font-mono text-xs">
+  SATELLITES ONLINE: 14
+</div>
+<div className="absolute top-4 right-4 z-[400] bg-black/80 border border-red-500/30 px-4 py-2 rounded text-red-400 font-mono text-xs">
+  THREAT LEVEL: CRITICAL
+</div>
         <div className="absolute bottom-4 left-4 z-[400] pointer-events-none">
           <div className="text-[10px] text-neutral-500 uppercase font-mono bg-black/50 px-2 py-1 rounded">
             Map Source: CartoDB Dark Matter
