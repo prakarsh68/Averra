@@ -1,56 +1,73 @@
 import torch
+import torch.nn as nn
 from torchvision import models, transforms
 from PIL import Image
 
 # -----------------------------------
-# Load pretrained model (dummy usage)
+# Device
 # -----------------------------------
-model = models.efficientnet_b0(
-    weights=models.EfficientNet_B0_Weights.DEFAULT
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+# -----------------------------------
+# Class Names (MUST match training)
+# -----------------------------------
+CLASS_NAMES = [
+    "Damaged_Infrastructure",
+    "Fire_Disaster",
+    "Human_Damage",
+    "Land_Disaster",
+    "Non_Damage",
+    "Water_Disaster"
+]
+
+# -----------------------------------
+# Load Trained Model
+# -----------------------------------
+model = models.resnet50(weights=None)
+model.fc = nn.Linear(model.fc.in_features, len(CLASS_NAMES))
+
+model.load_state_dict(
+    torch.load(
+        "models/disaster_classifier.pth",
+        map_location=device
+    )
 )
+
+model.to(device)
 model.eval()
 
 # -----------------------------------
-# Image preprocessing
+# Image Preprocessing
 # -----------------------------------
 transform = transforms.Compose([
     transforms.Resize((224, 224)),
-    transforms.ToTensor()
+    transforms.ToTensor(),
+    transforms.Normalize(
+        [0.485, 0.456, 0.406],
+        [0.229, 0.224, 0.225]
+    )
 ])
 
 # -----------------------------------
-# Damage prediction
+# Prediction Function
 # -----------------------------------
-def predict_damage(image_path: str) -> dict:
-    """
-    Called by FastAPI after image upload
-    Returns keys expected by frontend
-    """
+def predict_damage(image_path: str):
 
-    img = Image.open(image_path).convert("RGB")
-    img_tensor = transform(img).unsqueeze(0)
+    image = Image.open(image_path).convert("RGB")
 
-    # Forward pass (not used, dummy)
+    image_tensor = transform(image).unsqueeze(0).to(device)
+
     with torch.no_grad():
-        _ = model(img_tensor)
 
-    # Simple heuristic (brightness-based)
-    brightness = img_tensor.mean().item()
+        outputs = model(image_tensor)
 
-    if brightness > 0.6:
-        severity = "No Damage"
-        confidence = 0.9
-    elif brightness > 0.45:
-        severity = "Minor"
-        confidence = 0.8
-    elif brightness > 0.3:
-        severity = "Major"
-        confidence = 0.7
-    else:
-        severity = "Destroyed"
-        confidence = 0.6
+        probabilities = torch.softmax(outputs, dim=1)
+
+        confidence, predicted = torch.max(probabilities, 1)
+
+    predicted_class = CLASS_NAMES[predicted.item()]
 
     return {
-        "damage_severity": severity,
-        "confidence": confidence
+        "damage_severity": predicted_class,
+        "confidence": round(confidence.item(), 4)
     }
