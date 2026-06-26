@@ -1,9 +1,15 @@
-import React, { useState, useRef, useMemo } from "react";
+import React, { useState, useRef } from "react";
 
 interface IntelResult {
   area_type: string;
   confidence: number;
-  metadata?: string[]; // New: Detailed data for deep scans
+  risks: {
+    flood_risk: number;
+    wildfire_risk: number;
+    landslide_risk: number;
+  };
+
+  metadata?: string[];
 }
 
 const VisualIntel = () => {
@@ -35,25 +41,25 @@ const VisualIntel = () => {
     formData.append("deep_scan", String(isDeepScan));
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/visual-intel", {
-        method: "POST",
-        body: formData
-      });
-      const data = await res.json();
-      setResult(data);
-    } catch (error) {
-      // Fallback Mock Logic
-      setResult({ 
-        area_type: "Industrial", 
-        confidence: 0.94,
-        metadata: isDeepScan ? ["Structural Displacement Detected", "Thermal Signature: High", "Zone: Delta-9"] : []
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+  const res = await fetch("http://127.0.0.1:8000/visual-intel", {
+    method: "POST",
+    body: formData
+  });
 
-  return (
+  const data = await res.json();
+  console.log(data);
+  setResult(data);
+
+} catch (error) {
+  console.error(error);
+
+} finally {
+  setLoading(false);
+}
+
+};
+
+  return( 
     <div className={`min-h-screen transition-colors duration-700 font-mono p-4 md:p-8 ${isDeepScan ? 'bg-[#05010a]' : 'bg-[#02040a]'} text-slate-300`}>
       
       {/* Background Grid - Changes color based on checkbox */}
@@ -137,6 +143,35 @@ const VisualIntel = () => {
                     </h4>
                     <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-2">Classified via {isDeepScan ? 'Neural Overdrive' : 'Standard Core'}</p>
                   </div>
+
+                  <div className="border-t border-white/10 pt-6">
+  <p className="text-[10px] uppercase tracking-widest text-cyan-400 mb-4">
+    Risk Analysis
+  </p>
+
+  <div className="space-y-3">
+    <div className="flex justify-between">
+      <span>Flood Risk</span>
+      <span className="text-red-400 font-bold">
+        {result.risks.flood_risk}%
+      </span>
+    </div>
+
+    <div className="flex justify-between">
+      <span>Wildfire Risk</span>
+      <span className="text-orange-400 font-bold">
+        {result.risks.wildfire_risk}%
+      </span>
+    </div>
+
+    <div className="flex justify-between">
+      <span>Landslide Risk</span>
+      <span className="text-yellow-400 font-bold">
+        {result.risks.landslide_risk}%
+      </span>
+    </div>
+  </div>
+</div>
 
                   {isDeepScan && result.metadata && (
                     <div className="space-y-2 border-t border-purple-500/20 pt-6">

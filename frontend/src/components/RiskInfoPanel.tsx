@@ -1,8 +1,12 @@
 type Props = {
   region: string;
+  disasterStats: any[];
 };
 
-const RiskInfoPanel = ({ region }: Props) => {
+const RiskInfoPanel = ({
+  region,
+  disasterStats,
+}: Props) => {
   return (
     <div className="border border-cyan-500/20 bg-cyan-950/5 rounded-sm p-5">
       <h3 className="text-cyan-400 font-black tracking-widest uppercase mb-4">
@@ -64,6 +68,22 @@ const RiskInfoPanel = ({ region }: Props) => {
           <p className="font-bold text-white mb-2">
             Recommendations
           </p>
+
+          <div className="pt-4 border-t border-white/10">
+  <p className="font-bold text-white mb-2">
+    Disaster Distribution
+  </p>
+
+  {disasterStats.map((d, i) => (
+    <div
+      key={i}
+      className="flex justify-between text-sm mb-1"
+    >
+      <span>{d.name}</span>
+      <span>{d.count}</span>
+    </div>
+  ))}
+</div>
 
           <ul className="list-disc ml-5 text-sm">
             <li>Deploy emergency teams</li>

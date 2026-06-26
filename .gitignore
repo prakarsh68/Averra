@@ -54,7 +54,7 @@ data/
 *.tar.gz
 EuroSAT/
 flood_only/
-Comprehensive_Disaster_Detection/
+Comprehensive_Disaster_Dataset(CDD)/
 
 # -----------------------------
 # TEMP / RUNTIME

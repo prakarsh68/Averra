@@ -13,7 +13,7 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    DATASET_PATH = "../Comprehensive Disaster Dataset(CDD)"
+    DATASET_PATH = "../Comprehensive_Disaster_Dataset(CDD)"
     BATCH_SIZE = 16
     EPOCHS = 10
     LR = 0.0001
@@ -28,6 +28,8 @@ def main():
     ])
 
     train_dataset = datasets.ImageFolder(DATASET_PATH, transform=train_transforms)
+    print("Classes found:")
+    print(train_dataset.classes)
     train_loader = DataLoader(
         train_dataset,
         batch_size=BATCH_SIZE,

@@ -7,12 +7,26 @@ import os
 import random
 import cv2
 
+from risk_engine import calculate_risks
 from ai_model import predict_disaster
 from visual_intel import predict_area
 from segmentation_model import segment_image
 from damage_model import predict_damage   # ✅ NEW IMPORT
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="AVERRA AI Backend")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:5174",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # --------------------
 # CORS CONFIG
@@ -95,6 +109,16 @@ async def visual_intel(file: UploadFile = File(...)):
         shutil.copyfileobj(file.file, buffer)
 
     result = predict_area(file_path)
+
+    risks = calculate_risks(
+        result["area_type"],
+        rainfall=120,
+        humidity=85,
+        wind_speed=14
+    )
+
+    result["risks"] = risks
+
     os.remove(file_path)
 
     return result
