@@ -1,5 +1,20 @@
-const SeverityGauge = () => {
-  const risk = 82;
+type Props = {
+  riskLevel: string;
+  alerts: number;
+};
+
+const SeverityGauge = ({
+  riskLevel,
+  alerts,
+}: Props) => {
+  const risk =
+  riskLevel === "Flood"
+    ? 95
+    : riskLevel === "Wildfire"
+    ? 88
+    : riskLevel === "Landslide"
+    ? 82
+    : 40;
 
   return (
     <div className="border border-red-500/30 rounded-sm p-6 bg-gradient-to-br from-red-950/10 to-black">
@@ -26,7 +41,7 @@ const SeverityGauge = () => {
             </div>
 
             <div className="mt-2 text-red-500 font-bold tracking-widest">
-              CRITICAL
+              {riskLevel.toUpperCase()}
             </div>
 
             <div className="mt-1 text-xs opacity-50">
@@ -38,7 +53,7 @@ const SeverityGauge = () => {
 
       <div className="grid grid-cols-3 gap-4 mt-8 text-center">
         <div>
-          <p className="text-red-500 text-xl font-black">87</p>
+          <p className="text-red-500 text-xl font-black">{alerts}</p>
           <p className="text-xs opacity-60">Alerts</p>
         </div>
 

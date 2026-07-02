@@ -4,7 +4,14 @@ type Props = {
 };
 
 const ThreatLevel = ({ alertsCount, riskLevel }: Props) => {
-  const threatScore = Math.floor(Math.random() * 30) + 70;
+  const threatScore =
+  riskLevel === "High"
+    ? 90
+    : riskLevel === "Medium"
+    ? 65
+    : riskLevel === "Low"
+    ? 35
+    : 50;
 
   return (
     <div className="border border-red-500/30 bg-red-950/10 rounded-sm p-6 mb-6">
@@ -26,10 +33,12 @@ const ThreatLevel = ({ alertsCount, riskLevel }: Props) => {
   <p className="text-xs opacity-60">Active Alerts</p>
 </div>
 
-        <div className="text-center">
-          <p className="text-3xl text-white font-bold">34</p>
-          <p className="text-xs opacity-60">Response Teams</p>
-        </div>
+       <div className="text-center">
+  <p className="text-3xl text-white font-bold">
+    {Math.max(5, alertsCount * 2)}
+  </p>
+  <p className="text-xs opacity-60">Response Teams</p>
+</div>
 
         <div className="text-center">
   <p className="text-3xl text-white font-bold">

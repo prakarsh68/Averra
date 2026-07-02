@@ -15,8 +15,56 @@ import ResourceTracker from "../components/ResourceTracker";
 import AIPrediction from "../components/AIPrediction";
 import RiskInfoPanel from "../components/RiskInfoPanel";
 import MissionStatus from "../components/MissionStatus";
+interface DashboardData {
+  alerts: number;
+  reports: number;
+  resolved: number;
+
+  latest_area: string;
+  latest_damage: string;
+  confidence: number;
+  risk_level: string;
+
+  terrain_counts: Record<string, number>;
+  live_feed: string[];
+  recommendations: string[];
+
+  weather: {
+    temperature: number;
+    humidity: number;
+    wind_speed: number;
+    rain_risk: string;
+     risk_score: number;
+  };
+
+  resources: {
+    ambulances: number;
+    fire_units: number;
+    helicopters: number;
+    medical_teams: number;
+  };
+}
 
 const Dashboard = () => {
+  const [dashboard, setDashboard] = useState<DashboardData | null>(null);
+
+useEffect(() => {
+  const loadDashboard = async () => {
+    try {
+      const res = await fetch("http://127.0.0.1:8000/dashboard");
+      const data = await res.json();
+      setDashboard(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  loadDashboard();
+
+  const interval = setInterval(loadDashboard, 1500);
+
+  return () => clearInterval(interval);
+}, []);
   const [reports, setReports] = useState<any[]>([]);
   const [alerts, setAlerts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -98,28 +146,28 @@ const riskLevel = "HIGH";
   <div className="p-4 border border-red-500/30 bg-red-500/5 rounded">
     <p className="text-xs opacity-60">Active Alerts</p>
     <h2 className="text-3xl font-bold text-red-500">
-      {alerts.length}
-    </h2>
+  {dashboard?.alerts ?? alerts.length}
+</h2>
   </div>
 
   <div className="p-4 border border-yellow-500/30 bg-yellow-500/5 rounded">
     <p className="text-xs opacity-60">Reports</p>
     <h2 className="text-3xl font-bold text-yellow-500">
-      {reports.length}
+      {dashboard?.reports ?? reports.length}
     </h2>
   </div>
 
   <div className="p-4 border border-green-500/30 bg-green-500/5 rounded">
     <p className="text-xs opacity-60">Resolved Cases</p>
     <h2 className="text-3xl font-bold text-green-500">
-      91
-    </h2>
+  {dashboard?.resolved ?? 91}
+</h2>
   </div>
 
   <div className="p-4 border border-blue-500/30 bg-blue-500/5 rounded">
     <p className="text-xs opacity-60">Risk Level</p>
     <h2 className="text-3xl font-bold text-blue-500">
-      HIGH
+     {dashboard?.risk_level ?? "HIGH"}
     </h2>
   </div>
 
@@ -151,7 +199,9 @@ const riskLevel = "HIGH";
     </span>
   </div>
 
-  <DisasterTrendChart />
+  <DisasterTrendChart
+  terrainCounts={dashboard?.terrain_counts ?? {}}
+/>
   <RiskAssessment />
   <CommandHeader
   alertsCount={alerts.length}
@@ -161,18 +211,69 @@ const riskLevel = "HIGH";
   alertsCount={alerts.length}
   riskLevel={riskLevel}
 />
-  <SeverityGauge />
-  <WeatherIntel />
-  <ResourceTracker />
-  <AIBriefing />
-  <AIPrediction />
+  <SeverityGauge
+  riskLevel={dashboard?.risk_level ?? "Unknown"}
+  alerts={dashboard?.alerts ?? 0}
+/>
+  <WeatherIntel
+  weather={
+    dashboard?.weather ?? {
+      temperature: 0,
+      humidity: 0,
+      wind_speed: 0,
+      rain_risk: "Low",
+    }
+  }
+/>
+  <ResourceTracker
+  resources={
+    dashboard?.resources ?? {
+      ambulances: 0,
+      fire_units: 0,
+      helicopters: 0,
+      medical_teams: 0,
+    }
+  }
+/>
+  <AIBriefing
+  latestArea={dashboard?.latest_area ?? "Unknown"}
+  riskScore={dashboard.weather.risk_score}
+  riskLevel={dashboard?.risk_level ?? "LOW"}
+  recommendations={dashboard?.recommendations ?? []}
+/>
+  <AIPrediction
+  riskLevel={dashboard?.risk_level ?? "Unknown"}
+/>
 
 <RiskInfoPanel
-  region={selectedRegion}
+  region={dashboard?.latest_area ?? selectedRegion}
   disasterStats={disasterStats}
+  riskLevel={dashboard?.risk_level ?? "Unknown"}
+  confidence={dashboard?.confidence ?? 0}
+  latestDamage={dashboard?.latest_damage ?? "Unknown"}
 />
-<MissionStatus />
-<ActivityTimeline />
+<MissionStatus
+  weather={
+    dashboard?.weather ?? {
+      temperature: 0,
+      humidity: 0,
+      wind_speed: 0,
+      rain_risk: "Low",
+    }
+  }
+  resources={
+    dashboard?.resources ?? {
+      ambulances: 0,
+      fire_units: 0,
+      helicopters: 0,
+      medical_teams: 0,
+    }
+  }
+  alerts={dashboard?.alerts ?? 0}
+/>
+<ActivityTimeline
+  liveFeed={dashboard?.live_feed ?? []}
+/>
 </section>
 
             {/* SECONDARY INTEL TABLE */}
