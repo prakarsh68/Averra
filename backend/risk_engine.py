@@ -1,24 +1,73 @@
 def calculate_risks(area_type, rainfall, humidity, wind_speed):
+    area = area_type.lower()
 
-    flood_risk = 0
-    wildfire_risk = 0
-    landslide_risk = 0
+    risks = {
+        "flood_risk": 0,
+        "wildfire_risk": 0,
+        "landslide_risk": 0,
+    }
 
-    if area_type in ["River", "SeaLake"]:
-        flood_risk += 50
-
+    # Flood
     if rainfall > 100:
-        flood_risk += 30
-        landslide_risk += 25
+        risks["flood_risk"] += 60
+    if humidity > 80:
+        risks["flood_risk"] += 20
+    if "river" in area or "lake" in area:
+        risks["flood_risk"] += 20
 
-    if area_type == "Forest":
-        wildfire_risk += max(0, 70 - humidity)
+    # Wildfire
+    if humidity < 40:
+        risks["wildfire_risk"] += 40
+    if wind_speed > 15:
+        risks["wildfire_risk"] += 30
+    if "forest" in area:
+        risks["wildfire_risk"] += 30
 
-    if wind_speed > 25:
-        wildfire_risk += 20
+    # Landslide
+    if rainfall > 80:
+        risks["landslide_risk"] += 40
+    if "mountain" in area or "hill" in area:
+        risks["landslide_risk"] += 60
+
+    return risks
+
+
+def calculate_weather_risk(weather):
+    temperature = weather["temperature"]
+    humidity = weather["humidity"]
+    wind = weather["windSpeed"]
+    rain = weather["rain"]
+
+    risk_score = 0
+    recommendations = []
+
+    if rain > 30:
+        risk_score += 40
+        recommendations.append("Deploy flood response teams")
+
+    if wind > 50:
+        risk_score += 35
+        recommendations.append("Issue high wind advisory")
+
+    if temperature > 40:
+        risk_score += 20
+        recommendations.append("Prepare heatwave shelters")
+
+    if humidity > 90:
+        risk_score += 10
+        recommendations.append("Monitor waterlogged areas")
+
+    if risk_score >= 70:
+        level = "EXTREME"
+    elif risk_score >= 40:
+        level = "HIGH"
+    elif risk_score >= 20:
+        level = "MODERATE"
+    else:
+        level = "LOW"
 
     return {
-        "flood_risk": min(flood_risk, 100),
-        "wildfire_risk": min(wildfire_risk, 100),
-        "landslide_risk": min(landslide_risk, 100)
+        "risk_level": level,
+        "risk_score": risk_score,
+        "recommendations": recommendations,
     }
