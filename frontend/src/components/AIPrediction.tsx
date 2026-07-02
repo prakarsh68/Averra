@@ -1,22 +1,14 @@
-const AIPrediction = () => {
-    const predictions = [
+type Props = {
+  riskLevel: string;
+};
+
+const AIPrediction = ({ riskLevel }: Props) => {
+   const predictions = [
   {
-    disaster: "Flood",
-    probability: 87,
-    region: "Chennai",
-    timeframe: "Next 24 Hours",
-  },
-  {
-    disaster: "Cyclone",
-    probability: 72,
-    region: "Odisha Coast",
-    timeframe: "48 Hours",
-  },
-  {
-    disaster: "Heatwave",
-    probability: 65,
-    region: "Rajasthan",
-    timeframe: "3 Days",
+    disaster: riskLevel,
+    probability: 95,
+    region: "Latest AI Analysis",
+    timeframe: "Immediate",
   },
 ];
   return (

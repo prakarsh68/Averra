@@ -1,11 +1,17 @@
 type Props = {
   region: string;
   disasterStats: any[];
+  riskLevel: string;
+  confidence: number;
+  latestDamage: string;
 };
 
 const RiskInfoPanel = ({
   region,
   disasterStats,
+  riskLevel,
+  confidence,
+  latestDamage,
 }: Props) => {
   return (
     <div className="border border-cyan-500/20 bg-cyan-950/5 rounded-sm p-5">
@@ -26,7 +32,7 @@ const RiskInfoPanel = ({
             Risk Score:
           </span>{" "}
           <span className="text-red-500 font-bold">
-  84 / 100
+ {confidence.toFixed(2)} / 100
 </span>
         </p>
 
@@ -35,7 +41,7 @@ const RiskInfoPanel = ({
     Flood Risk:
   </span>{" "}
   <span className="text-red-500 font-bold">
-    HIGH
+   {riskLevel.toUpperCase()}
   </span>
 </p>
 
@@ -44,7 +50,7 @@ const RiskInfoPanel = ({
     Cyclone Risk:
   </span>{" "}
   <span className="text-yellow-500 font-bold">
-    MEDIUM
+    {riskLevel === "Flood" ? "LOW" : "MEDIUM"}
   </span>
 </p>
 
@@ -53,7 +59,7 @@ const RiskInfoPanel = ({
     Fire Risk:
   </span>{" "}
   <span className="text-green-500 font-bold">
-    LOW
+    {latestDamage === "Destroyed" ? "HIGH" : "LOW"}
   </span>
 </p>
 
@@ -61,7 +67,7 @@ const RiskInfoPanel = ({
           <span className="font-bold text-white">
             Population Impact:
           </span>{" "}
-          1.2M
+          {Math.floor(confidence * 12000).toLocaleString()}
         </p>
 
         <div className="pt-3 border-t border-white/10">
@@ -86,9 +92,23 @@ const RiskInfoPanel = ({
 </div>
 
           <ul className="list-disc ml-5 text-sm">
-            <li>Deploy emergency teams</li>
-            <li>Increase monitoring</li>
-            <li>Prepare evacuation routes</li>
+            <li>
+  {riskLevel === "Flood"
+    ? "Deploy flood response teams"
+    : "Deploy emergency response teams"}
+</li>
+
+<li>
+  {latestDamage === "Destroyed"
+    ? "Immediate evacuation recommended"
+    : "Increase monitoring"}
+</li>
+
+<li>
+  {confidence > 80
+    ? "Prepare evacuation routes"
+    : "Continue surveillance"}
+</li>
           </ul>
         </div>
       </div>
